@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -20,6 +21,12 @@ public class UserService {
         Optional<User> user = userRepository.findById(id);
 
         return user.orElseThrow(() -> new ObjectNotFoundException("Usuario nao encontrado"));
+    }
+
+    public List<User> findAll(){
+        List<User> users = userRepository.findAll();
+
+        return users;
     }
 
     @Transactional
