@@ -37,6 +37,12 @@ public class TaskController {
         return ResponseEntity.ok().body(objs);
     }
 
+    @GetMapping("/user/all")
+    public ResponseEntity<List<Task>> findAllByUserAdmin(){
+        List<Task> objs = this.taskService.findAllByUserAdmin();
+        return ResponseEntity.ok().body(objs);
+    }
+
     @PostMapping
     @Validated
     public ResponseEntity<Void> create(@Valid @RequestBody Task obj){

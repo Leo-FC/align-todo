@@ -48,6 +48,18 @@ public class TaskService {
         return tasks;
     }
 
+    public List<Task> findAllByUserAdmin(){
+
+        UserSpringSecurity userSpringSecurity = UserService.authenticated();
+
+        if(Objects.isNull(userSpringSecurity) || !userSpringSecurity.hasRole(ProfileEnum.ADMIN)){
+            throw new AuthorizationException("Acesso negado");
+        }
+
+        List<Task> tasks = taskRepository.findAll();
+        return tasks;
+    }
+
 
     @Transactional
     public Task create(Task obj){
