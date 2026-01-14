@@ -1,6 +1,7 @@
 package com.lfc.todosimple.controller;
 
 import com.lfc.todosimple.model.Task;
+import com.lfc.todosimple.model.projection.TaskProjection;
 import com.lfc.todosimple.service.TaskService;
 import com.lfc.todosimple.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,8 @@ public class TaskController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<List<Task>> findAllByUser(){
-        List<Task> objs = this.taskService.findAllByUser();
+    public ResponseEntity<List<TaskProjection>> findAllByUser(){
+        List<TaskProjection> objs = this.taskService.findAllByUser();
         return ResponseEntity.ok().body(objs);
     }
 

@@ -3,6 +3,7 @@ package com.lfc.todosimple.service;
 import com.lfc.todosimple.model.Task;
 import com.lfc.todosimple.model.User;
 import com.lfc.todosimple.model.enums.ProfileEnum;
+import com.lfc.todosimple.model.projection.TaskProjection;
 import com.lfc.todosimple.repository.TaskRepository;
 import com.lfc.todosimple.security.UserSpringSecurity;
 import com.lfc.todosimple.service.exceptions.AuthorizationException;
@@ -36,7 +37,7 @@ public class TaskService {
         return task;
     }
 
-    public List<Task> findAllByUser(){
+    public List<TaskProjection> findAllByUser(){
 
         UserSpringSecurity userSpringSecurity = UserService.authenticated();
 
@@ -44,7 +45,7 @@ public class TaskService {
             throw new AuthorizationException("Acesso negado");
         }
 
-        List<Task> tasks = taskRepository.findByUser_Id(userSpringSecurity.getId());
+        List<TaskProjection> tasks = taskRepository.findByUser_Id(userSpringSecurity.getId());
         return tasks;
     }
 
@@ -56,7 +57,7 @@ public class TaskService {
             throw new AuthorizationException("Acesso negado");
         }
 
-        List<Task> tasks = taskRepository.findAll();
+        List<Task> tasks = taskRepository.findAllByOrderByUser_IdAsc();
         return tasks;
     }
 

@@ -2,12 +2,23 @@ package com.lfc.todosimple.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lfc.todosimple.model.enums.ProfileEnum;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Column;
+import javax.persistence.OneToMany;
+import javax.persistence.GenerationType;
+import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+import javax.persistence.CollectionTable;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,13 +29,8 @@ import java.util.stream.Collectors;
 @Table(name = User.TABLE_NAME)
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 public class User {
-
-    public interface CreateUser{}
-    public interface UpdateUser{}
 
     public static final String TABLE_NAME = "user";
 
@@ -34,16 +40,14 @@ public class User {
     private Long id;
 
     @Column(name = "username", length = 100, nullable = false, unique = true)
-    @NotNull(groups = CreateUser.class)
-    @NotEmpty(groups = CreateUser.class)
-    @Size(groups= CreateUser.class, min = 3, max = 100)
+    @NotBlank
+    @Size(min = 3, max = 100)
     private String username;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(name = "password", length = 60, nullable = false)
-    @NotNull(groups = {CreateUser.class, UpdateUser.class})
-    @NotEmpty(groups = {CreateUser.class, UpdateUser.class})
-    @Size(groups= {CreateUser.class, UpdateUser.class}, min = 8, max = 60)
+    @NotBlank
+    @Size(min = 8, max = 60)
     private String password;
 
     @OneToMany(mappedBy = "user")
