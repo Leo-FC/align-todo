@@ -23,6 +23,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// ==========================================
+// FUNÇÕES AUXILIARES (BADGES)
+// ==========================================
+
+function getPriorityBadge(code) {
+    switch(code) {
+        case 1: return '<span class="badge bg-success">Baixa</span>';
+        case 2: return '<span class="badge bg-primary">Média</span>';
+        case 3: return '<span class="badge bg-warning text-dark">Alta</span>';
+        case 4: return '<span class="badge bg-danger">Urgente</span>';
+        default: return '<span class="badge bg-secondary">Indefinido</span>';
+    }
+}
+
+function getStatusBadge(code) {
+    switch(code) {
+        case 1: return '<span class="badge border border-secondary text-secondary bg-light">Não Começou</span>';
+        case 2: return '<span class="badge bg-info text-dark">Em Andamento</span>';
+        case 3: return '<span class="badge bg-success"><i class="bi bi-check-circle"></i> Concluído</span>';
+        default: return '<span class="badge bg-secondary">?</span>';
+    }
+}
+
+// ==========================================
+// LÓGICA ADMIN
+// ==========================================
+
 function isAdmin() {
     const roles = localStorage.getItem("userRoles");
     return roles && roles.includes("ROLE_ADMIN");
@@ -77,10 +104,13 @@ function setAdminView(mode, filterValue) {
     else if (mode === 'user') {
         if (!filterValue) return;
         title.innerText = `Tarefas de: ${filterValue}`;
-
         getTasks('filter', filterValue);
     }
 }
+
+// ==========================================
+// BUSCAR E RENDERIZAR
+// ==========================================
 
 async function getTasks(mode = 'mine', filterUsername = null) {
     const token = localStorage.getItem("token");
@@ -134,6 +164,7 @@ function renderTasks(tasks) {
 
     tbody.innerHTML = "";
 
+    // Lógica da coluna extra de Usuário (Admin)
     const userColumnId = "userColHeader";
     let userHeader = document.getElementById(userColumnId);
 
@@ -142,6 +173,7 @@ function renderTasks(tasks) {
             const th = document.createElement("th");
             th.id = userColumnId;
             th.innerText = "Usuário";
+            // Insere antes da coluna Prioridade (agora índice 2)
             thead.insertBefore(th, thead.children[2]);
         }
     } else {
@@ -158,20 +190,27 @@ function renderTasks(tasks) {
     tasks.forEach((task, index) => {
         const safeDescription = task.description ? task.description.replace(/'/g, "\\'").replace(/"/g, '&quot;') : "";
 
+        // Dados de Prioridade e Status
+        const priorityCode = task.priority;
+        const statusCode = task.status;
+
         const userColumnHtml = isAdmin()
             ? `<td><span class="badge bg-info text-dark">${task.user ? task.user.username : 'N/A'}</span></td>`
             : '';
 
         const row = `
-            <tr>
+            <tr class="align-middle">
                 <td>${index + 1}</td>
-                <td>${task.description}</td>
+                <td class="fw-bold">${task.description}</td>
                 ${userColumnHtml}
+                <td class="text-center">${getPriorityBadge(priorityCode)}</td>
+                <td class="text-center">${getStatusBadge(statusCode)}</td>
                 <td class="text-end">
-                    <button class="btn btn-warning btn-sm me-2" onclick="openEditModal(${task.id}, '${safeDescription}')">
+                    <button class="btn btn-outline-warning btn-sm me-1" 
+                        onclick="openEditModal(${task.id}, '${safeDescription}', ${priorityCode}, ${statusCode})">
                         <i class="bi bi-pencil"></i>
                     </button>
-                    <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${task.id})">
+                    <button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal(${task.id})">
                         <i class="bi bi-trash"></i>
                     </button>
                 </td>
@@ -181,6 +220,10 @@ function renderTasks(tasks) {
     });
 }
 
+// ==========================================
+// CRIAÇÃO (CREATE)
+// ==========================================
+
 function handleEnter(event) {
     if (event.key === "Enter") {
         createTask();
@@ -189,11 +232,19 @@ function handleEnter(event) {
 
 async function createTask() {
     const descriptionInput = document.getElementById("taskDescription");
+    const priorityInput = document.getElementById("taskPriority"); // Captura o Select
+
     const description = descriptionInput.value;
+    const priority = priorityInput.value;
     const token = localStorage.getItem("token");
 
     if (!description || description.trim() === "") {
         alert("A descrição da tarefa não pode estar vazia!");
+        return;
+    }
+
+    if (!priority) {
+        alert("Por favor, selecione uma prioridade!");
         return;
     }
 
@@ -204,11 +255,15 @@ async function createTask() {
                 "Authorization": token,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ description: description })
+            body: JSON.stringify({
+                description: description,
+                priority: parseInt(priority) // Envia como Inteiro (singular)
+            })
         });
 
         if (response.ok) {
             descriptionInput.value = "";
+            priorityInput.value = ""; // Reseta o select
 
             if(isAdmin() && document.getElementById("btnAllTasks").classList.contains("active")) {
                 getTasks('all');
@@ -226,18 +281,27 @@ async function createTask() {
     }
 }
 
-function openEditModal(id, currentDescription) {
+// ==========================================
+// EDIÇÃO (UPDATE)
+// ==========================================
+
+function openEditModal(id, currentDescription, currentPriority, currentStatus) {
     taskIdToEdit = id;
-    const input = document.getElementById('editTaskDescription');
-    input.value = currentDescription;
+
+    // Preenche os campos do modal
+    document.getElementById('editTaskDescription').value = currentDescription;
+    document.getElementById('editTaskPriority').value = currentPriority || 1;
+    document.getElementById('editTaskStatus').value = currentStatus || 1;
+
     editModalBS.show();
-    setTimeout(() => input.focus(), 500);
 }
 
 async function confirmUpdateTask() {
     if (!taskIdToEdit) return;
 
     const newDescription = document.getElementById('editTaskDescription').value;
+    const newPriority = document.getElementById('editTaskPriority').value;
+    const newStatus = document.getElementById('editTaskStatus').value;
 
     if (!newDescription || newDescription.trim() === "") {
         alert("A descrição não pode ser vazia.");
@@ -251,7 +315,11 @@ async function confirmUpdateTask() {
                 "Authorization": localStorage.getItem("token"),
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ description: newDescription })
+            body: JSON.stringify({
+                description: newDescription,
+                priority: parseInt(newPriority), // Envia prioridade
+                status: parseInt(newStatus)      // Envia status
+            })
         });
 
         if (response.ok) {
@@ -265,6 +333,10 @@ async function confirmUpdateTask() {
         alert("Falha na comunicação com o servidor.");
     }
 }
+
+// ==========================================
+// EXCLUSÃO (DELETE)
+// ==========================================
 
 function openDeleteModal(id) {
     taskIdToDelete = id;
@@ -294,6 +366,10 @@ async function confirmDeleteTask() {
         alert("Falha na comunicação com o servidor.");
     }
 }
+
+// ==========================================
+// UTILITÁRIOS
+// ==========================================
 
 function logout() {
     localStorage.removeItem("token");

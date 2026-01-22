@@ -83,6 +83,8 @@ public class TaskService {
         Task newObj = findById(obj.getId());
 
         newObj.setDescription(obj.getDescription());
+        newObj.setPriority(obj.getPriority());
+        newObj.setStatus(obj.getStatus());
         return this.taskRepository.save(newObj);
     }
 

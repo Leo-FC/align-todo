@@ -44,9 +44,20 @@
     <h3 class="mt-4" id="pageTitle">Suas Tarefas</h3>
 
     <div class="row mb-4 mt-3">
-        <div class="col-md-9 col-sm-12">
+        <div class="col-md-6 col-sm-12">
             <input type="text" id="taskDescription" class="form-control" placeholder="O que você precisa fazer?" onkeypress="handleEnter(event)">
         </div>
+
+        <div class="col-md-3 col-sm-12 mt-md-0 mt-2">
+            <select id="taskPriority" class="form-select">
+                <option value="" selected disabled>Prioridade...</option>
+                <option value="1">Baixa</option>
+                <option value="2">Média</option>
+                <option value="3">Alta</option>
+                <option value="4">Urgente</option>
+            </select>
+        </div>
+
         <div class="col-md-3 col-sm-12 mt-md-0 mt-2">
             <button class="btn btn-primary w-100" onclick="createTask()">+ Adicionar Tarefa</button>
         </div>
@@ -57,11 +68,13 @@
         <p>Carregando...</p>
     </div>
 
-    <table class="table table-striped d-none" id="tasksTable">
+    <table class="table table-striped table-hover d-none" id="tasksTable">
         <thead>
         <tr>
             <th>#</th>
             <th>Descrição</th>
+            <th class="text-center">Prioridade</th>
+            <th class="text-center">Status</th>
             <th class="text-end">Ações</th>
         </tr>
         </thead>
@@ -85,6 +98,26 @@
                     <div class="mb-3">
                         <label for="editTaskDescription" class="form-label">Descrição</label>
                         <input type="text" class="form-control" id="editTaskDescription" required>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label for="editTaskPriority" class="form-label">Prioridade</label>
+                            <select id="editTaskPriority" class="form-select">
+                                <option value="1">Baixa</option>
+                                <option value="2">Média</option>
+                                <option value="3">Alta</option>
+                                <option value="4">Urgente</option>
+                            </select>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="editTaskStatus" class="form-label">Status</label>
+                            <select id="editTaskStatus" class="form-select">
+                                <option value="1">Não Começou</option>
+                                <option value="2">Em Andamento</option>
+                                <option value="3">Concluído</option>
+                            </select>
+                        </div>
                     </div>
                 </form>
             </div>
