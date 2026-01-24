@@ -23,10 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// ==========================================
-// FUNÇÕES AUXILIARES (BADGES)
-// ==========================================
-
 function getPriorityBadge(code) {
     switch(code) {
         case 1: return '<span class="badge bg-success">Baixa</span>';
@@ -45,10 +41,6 @@ function getStatusBadge(code) {
         default: return '<span class="badge bg-secondary">?</span>';
     }
 }
-
-// ==========================================
-// LÓGICA ADMIN
-// ==========================================
 
 function isAdmin() {
     const roles = localStorage.getItem("userRoles");
@@ -108,10 +100,6 @@ function setAdminView(mode, filterValue) {
     }
 }
 
-// ==========================================
-// BUSCAR E RENDERIZAR
-// ==========================================
-
 async function getTasks(mode = 'mine', filterUsername = null) {
     const token = localStorage.getItem("token");
     const loadingElement = document.getElementById("loading");
@@ -164,7 +152,6 @@ function renderTasks(tasks) {
 
     tbody.innerHTML = "";
 
-    // Lógica da coluna extra de Usuário (Admin)
     const userColumnId = "userColHeader";
     let userHeader = document.getElementById(userColumnId);
 
@@ -173,7 +160,6 @@ function renderTasks(tasks) {
             const th = document.createElement("th");
             th.id = userColumnId;
             th.innerText = "Usuário";
-            // Insere antes da coluna Prioridade (agora índice 2)
             thead.insertBefore(th, thead.children[2]);
         }
     } else {
@@ -190,7 +176,6 @@ function renderTasks(tasks) {
     tasks.forEach((task, index) => {
         const safeDescription = task.description ? task.description.replace(/'/g, "\\'").replace(/"/g, '&quot;') : "";
 
-        // Dados de Prioridade e Status
         const priorityCode = task.priority;
         const statusCode = task.status;
 
@@ -220,10 +205,6 @@ function renderTasks(tasks) {
     });
 }
 
-// ==========================================
-// CRIAÇÃO (CREATE)
-// ==========================================
-
 function handleEnter(event) {
     if (event.key === "Enter") {
         createTask();
@@ -232,7 +213,7 @@ function handleEnter(event) {
 
 async function createTask() {
     const descriptionInput = document.getElementById("taskDescription");
-    const priorityInput = document.getElementById("taskPriority"); // Captura o Select
+    const priorityInput = document.getElementById("taskPriority");
 
     const description = descriptionInput.value;
     const priority = priorityInput.value;
@@ -257,13 +238,13 @@ async function createTask() {
             },
             body: JSON.stringify({
                 description: description,
-                priority: parseInt(priority) // Envia como Inteiro (singular)
+                priority: parseInt(priority)
             })
         });
 
         if (response.ok) {
             descriptionInput.value = "";
-            priorityInput.value = ""; // Reseta o select
+            priorityInput.value = "";
 
             if(isAdmin() && document.getElementById("btnAllTasks").classList.contains("active")) {
                 getTasks('all');
@@ -281,14 +262,10 @@ async function createTask() {
     }
 }
 
-// ==========================================
-// EDIÇÃO (UPDATE)
-// ==========================================
 
 function openEditModal(id, currentDescription, currentPriority, currentStatus) {
     taskIdToEdit = id;
 
-    // Preenche os campos do modal
     document.getElementById('editTaskDescription').value = currentDescription;
     document.getElementById('editTaskPriority').value = currentPriority || 1;
     document.getElementById('editTaskStatus').value = currentStatus || 1;
@@ -317,8 +294,8 @@ async function confirmUpdateTask() {
             },
             body: JSON.stringify({
                 description: newDescription,
-                priority: parseInt(newPriority), // Envia prioridade
-                status: parseInt(newStatus)      // Envia status
+                priority: parseInt(newPriority),
+                status: parseInt(newStatus)
             })
         });
 
@@ -333,10 +310,6 @@ async function confirmUpdateTask() {
         alert("Falha na comunicação com o servidor.");
     }
 }
-
-// ==========================================
-// EXCLUSÃO (DELETE)
-// ==========================================
 
 function openDeleteModal(id) {
     taskIdToDelete = id;
@@ -366,10 +339,6 @@ async function confirmDeleteTask() {
         alert("Falha na comunicação com o servidor.");
     }
 }
-
-// ==========================================
-// UTILITÁRIOS
-// ==========================================
 
 function logout() {
     localStorage.removeItem("token");

@@ -3,44 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ToDo - Cadastro</title>
+    <title>Align - Cadastro</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f0f2f5; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .card { width: 100%; max-width: 400px; border: none; shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link href="css/login.css" rel="stylesheet">
 </head>
 <body>
 
-<div class="card p-4">
-    <h3 class="text-center mb-4">Criar Conta</h3>
-    <form id="signupForm">
-        <div class="mb-3">
-            <label for="username" class="form-label">Usuário</label>
-            <input type="text" class="form-control" id="username" placeholder="Mínimo 3 caracteres" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Senha</label>
-            <input type="password" class="form-control" id="password" placeholder="Mínimo 8 caracteres" required>
-        </div>
-        <div class="mb-3">
-            <label for="confirmPassword" class="form-label">Confirmar Senha</label>
-            <input type="password" class="form-control" id="confirmPassword" required>
+<div class="container-fluid">
+    <div class="row align-items-center justify-content-center w-100 m-0">
+
+        <div class="col-12 col-lg-6 d-flex flex-column justify-content-center align-items-center align-items-lg-end text-center text-lg-start pe-0 pe-lg-5 mb-3 mb-lg-0">
+
+            <div style="max-width: 600px;">
+                <div class="d-flex align-items-center mb-4 logo-header">
+                    <img src="https://i.imgur.com/OpZnh8X.png" alt="Logo" style="height: 90px;" class="me-3">
+                    <h1 class="display-2 fw-bold text-brand-green m-0" style="letter-spacing: -2px;">Align</h1>
+                </div>
+
+                <p class="description-text">
+                    Gerenciamento de tarefas simples e eficiente.<br>
+                    Classifique por urgência, acompanhe o status e mantenha seu fluxo de trabalho alinhado.
+                </p>
+            </div>
         </div>
 
-        <button type="submit" class="btn btn-success w-100">Cadastrar</button>
-    </form>
+        <div class="col-lg-1 d-none d-lg-flex justify-content-center align-items-center">
+            <div class="divider-vertical"></div>
+        </div>
 
-    <div id="alertError" class="alert alert-danger mt-3 d-none" role="alert"></div>
-    <div id="alertSuccess" class="alert alert-success mt-3 d-none" role="alert">
-        Cadastro realizado com sucesso! Redirecionando...
-    </div>
+        <div class="col-12 col-lg-4 p-4 ps-0 ps-lg-5 d-flex flex-column align-items-center align-items-lg-start">
 
-    <div class="mt-3 text-center">
-        <a href="login.html">Já tem uma conta? Faça Login</a>
+            <form id="signupForm" style="width: 100%; max-width: 400px;">
+
+                <h3 class="text-white mb-4 fw-bold text-center text-lg-start" >Crie sua conta</h3>
+
+                <div class="mb-3 text-start">
+                    <label for="username" class="form-label">Usuário</label>
+                    <input type="text" class="form-control form-control-custom" id="username" placeholder="Mínimo 3 caracteres" required>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label for="password" class="form-label">Senha</label>
+                    <input type="password" class="form-control form-control-custom" id="password" placeholder="Mínimo 8 caracteres" required>
+                </div>
+
+                <div class="mb-4 text-start">
+                    <label for="confirmPassword" class="form-label">Confirmar Senha</label>
+                    <input type="password" class="form-control form-control-custom" id="confirmPassword" required>
+                </div>
+
+                <div class="d-grid gap-2 col-8 col-md-6 mx-auto mb-4">
+                    <button type="submit" class="btn btn-custom">Cadastrar</button>
+                </div>
+
+                <div class="text-center">
+                    <a href="login.html" class="link-register">Já tem uma conta? Faça Login.</a>
+                </div>
+            </form>
+
+            <div id="alertError" class="alert alert-danger mt-3 d-none text-center w-100" role="alert" style="border-radius: 20px; max-width: 400px;"></div>
+            <div id="alertSuccess" class="alert alert-success mt-3 d-none text-center w-100" role="alert" style="border-radius: 20px; max-width: 400px;">
+                Cadastro realizado com sucesso! Redirecionando...
+            </div>
+        </div>
+
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="scripts/signup.js"></script>
 </body>
 </html>
