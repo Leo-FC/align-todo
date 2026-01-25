@@ -1,0 +1,133 @@
+body {
+    background-color: #172627;
+    font-family: 'Poppins', sans-serif;
+    color: #e0e0e0;
+    min-height: 100vh;
+}
+
+.navbar-custom {
+    background-color: #172627 !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    padding: 15px 0;
+    border-bottom: 1px solid #20C997;
+}
+
+.brand-logo {
+    font-weight: 700;
+    color: #20C997 !important;
+    font-size: 1.5rem;
+    letter-spacing: -1px;
+    text-decoration: none;
+}
+
+.form-control-custom,
+.form-select-custom {
+    background-color: #1a2a2b;
+    border: 1px solid #2c3e50;
+    color: #fff;
+    border-radius: 50px;
+    padding: 10px 20px;
+}
+
+.form-control-custom:focus,
+.form-select-custom:focus {
+    background-color: #203133;
+    color: #fff;
+    border-color: #20C997;
+    box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.2);
+    outline: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+.btn-custom {
+    background-color: #20C997;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #17a078;
+    color: #fff;
+    transform: scale(1.03);
+}
+
+.btn-outline-custom {
+    border: 1px solid #20C997;
+    color: #20C997;
+    border-radius: 50px;
+    background-color: transparent;
+}
+
+.btn-outline-custom:hover,
+.btn-outline-custom.active {
+    background-color: #20C997;
+    color: #fff;
+}
+
+.table-custom {
+    margin-top: 20px;
+    --bs-table-bg: transparent;
+    --bs-table-color: #e0e0e0;
+    --bs-table-border-color: transparent;
+}
+
+.table-custom thead th {
+    background-color: #121E1F;
+    color: #20C997;
+    border-bottom: 2px solid #20C997;
+    border-top: none;
+    font-weight: 600;
+    padding: 15px;
+}
+
+.table-custom tbody td {
+    border-bottom: 1px solid #233435;
+    padding: 15px;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover > * {
+    color: #ffffff !important;
+    background-color: rgba(32, 201, 151, 0.15) !important;
+    box-shadow: inset 0 0 0 9999px rgba(32, 201, 151, 0.15);
+}
+
+.table-hover tbody tr:hover .btn {
+    opacity: 1;
+}
+
+.modal-content-custom {
+    background-color: #172627;
+    color: #fff;
+    border: 1px solid #2c3e50;
+    border-radius: 15px;
+}
+
+.modal-header {
+    border-bottom: 1px solid #2c3e50;
+}
+
+.modal-footer {
+    border-top: 1px solid #2c3e50;
+}
+
+.btn-close-white {
+    filter: invert(1);
+}
+
+.text-brand-green {
+    color: #20C997 !important;
+}
+
+::placeholder {
+    color: #6c757d !important;
+    opacity: 1;
+}

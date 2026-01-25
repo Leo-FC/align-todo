@@ -1,5 +1,7 @@
 const API_URL = "http://localhost:8080";
 
+let currentTasks = [];
+
 let taskIdToDelete = null;
 let taskIdToEdit = null;
 let deleteModalBS = null;
@@ -35,11 +37,44 @@ function getPriorityBadge(code) {
 
 function getStatusBadge(code) {
     switch(code) {
-        case 1: return '<span class="badge border border-secondary text-secondary bg-light">Não Começou</span>';
+        case 1: return '<span class="badge border border-secondary text-secondary bg-transparent">Não Começou</span>';
         case 2: return '<span class="badge bg-info text-dark">Em Andamento</span>';
         case 3: return '<span class="badge bg-success"><i class="bi bi-check-circle"></i> Concluído</span>';
         default: return '<span class="badge bg-secondary">?</span>';
     }
+}
+
+function formatDate(dateInput) {
+    if (!dateInput) return '<span class="text-muted small">-</span>';
+
+    if (Array.isArray(dateInput)) {
+        const year = dateInput[0];
+        const month = String(dateInput[1]).padStart(2, '0');
+        const day = String(dateInput[2]).padStart(2, '0');
+        return `${day}/${month}/${year}`;
+    }
+
+    if (typeof dateInput === 'string') {
+        const parts = dateInput.split('-');
+        if(parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+    }
+
+    return dateInput;
+}
+
+function formatForInput(dateInput) {
+    if (!dateInput) return "";
+
+    if (Array.isArray(dateInput)) {
+        const year = dateInput[0];
+        const month = String(dateInput[1]).padStart(2, '0');
+        const day = String(dateInput[2]).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    return dateInput;
 }
 
 function isAdmin() {
@@ -59,7 +94,7 @@ async function setupAdminPanel() {
             const users = await response.json();
             const select = document.getElementById("userFilterSelect");
 
-            select.innerHTML = '<option value="" selected>Filtrar por Usuário específico...</option>';
+            select.innerHTML = '<option value="" selected>Filtrar por Usuário...</option>';
 
             users.forEach(user => {
                 const option = document.createElement("option");
@@ -130,11 +165,13 @@ async function getTasks(mode = 'mine', filterUsername = null) {
 
         let tasks = await response.json();
 
+        currentTasks = tasks;
+
         if (mode === 'filter' && filterUsername) {
-            tasks = tasks.filter(t => t.user && t.user.username === filterUsername);
+            currentTasks = tasks.filter(t => t.user && t.user.username === filterUsername);
         }
 
-        renderTasks(tasks);
+        renderTasks(currentTasks);
 
     } catch (error) {
         console.error(error);
@@ -174,10 +211,8 @@ function renderTasks(tasks) {
     table.classList.remove("d-none");
 
     tasks.forEach((task, index) => {
-        const safeDescription = task.description ? task.description.replace(/'/g, "\\'").replace(/"/g, '&quot;') : "";
-
-        const priorityCode = task.priority;
-        const statusCode = task.status;
+        const createdDate = task.createdDate;
+        const deadline = task.deadline;
 
         const userColumnHtml = isAdmin()
             ? `<td><span class="badge bg-info text-dark">${task.user ? task.user.username : 'N/A'}</span></td>`
@@ -187,12 +222,18 @@ function renderTasks(tasks) {
             <tr class="align-middle">
                 <td>${index + 1}</td>
                 <td class="fw-bold">${task.description}</td>
+                
                 ${userColumnHtml}
-                <td class="text-center">${getPriorityBadge(priorityCode)}</td>
-                <td class="text-center">${getStatusBadge(statusCode)}</td>
+                
+                <td class="text-center">${formatDate(createdDate)}</td>
+                <td class="text-center">${formatDate(deadline)}</td>
+
+                <td class="text-center">${getPriorityBadge(task.priority)}</td>
+                <td class="text-center">${getStatusBadge(task.status)}</td>
+                
                 <td class="text-end">
                     <button class="btn btn-outline-warning btn-sm me-1" 
-                        onclick="openEditModal(${task.id}, '${safeDescription}', ${priorityCode}, ${statusCode})">
+                        onclick="openEditModal(${task.id})">
                         <i class="bi bi-pencil"></i>
                     </button>
                     <button class="btn btn-outline-danger btn-sm" onclick="openDeleteModal(${task.id})">
@@ -214,9 +255,11 @@ function handleEnter(event) {
 async function createTask() {
     const descriptionInput = document.getElementById("taskDescription");
     const priorityInput = document.getElementById("taskPriority");
+    const deadlineInput = document.getElementById("taskDeadline");
 
     const description = descriptionInput.value;
     const priority = priorityInput.value;
+    const deadline = deadlineInput.value;
     const token = localStorage.getItem("token");
 
     if (!description || description.trim() === "") {
@@ -229,6 +272,14 @@ async function createTask() {
         return;
     }
 
+    if (deadline) {
+        const today = new Date().toISOString().split('T')[0];
+        if (deadline < today) {
+            alert("A data de entrega não pode ser no passado!");
+            return;
+        }
+    }
+
     try {
         const response = await fetch(`${API_URL}/task`, {
             method: "POST",
@@ -238,13 +289,15 @@ async function createTask() {
             },
             body: JSON.stringify({
                 description: description,
-                priority: parseInt(priority)
+                priority: parseInt(priority),
+                deadline: deadline || null
             })
         });
 
         if (response.ok) {
             descriptionInput.value = "";
             priorityInput.value = "";
+            deadlineInput.value = "";
 
             if(isAdmin() && document.getElementById("btnAllTasks").classList.contains("active")) {
                 getTasks('all');
@@ -263,12 +316,19 @@ async function createTask() {
 }
 
 
-function openEditModal(id, currentDescription, currentPriority, currentStatus) {
+function openEditModal(id) {
+    const task = currentTasks.find(t => t.id === id);
+
+    if (!task) return;
+
     taskIdToEdit = id;
 
-    document.getElementById('editTaskDescription').value = currentDescription;
-    document.getElementById('editTaskPriority').value = currentPriority || 1;
-    document.getElementById('editTaskStatus').value = currentStatus || 1;
+    document.getElementById('editTaskDescription').value = task.description;
+    document.getElementById('editTaskPriority').value = task.priority || 1;
+    document.getElementById('editTaskStatus').value = task.status || 1;
+
+    document.getElementById('editTaskCreatedDate').value = formatForInput(task.createdDate);
+    document.getElementById('editTaskDeadline').value = formatForInput(task.deadline);
 
     editModalBS.show();
 }
@@ -280,9 +340,19 @@ async function confirmUpdateTask() {
     const newPriority = document.getElementById('editTaskPriority').value;
     const newStatus = document.getElementById('editTaskStatus').value;
 
+    const newCreatedDate = document.getElementById('editTaskCreatedDate').value;
+    const newDeadline = document.getElementById('editTaskDeadline').value;
+
     if (!newDescription || newDescription.trim() === "") {
         alert("A descrição não pode ser vazia.");
         return;
+    }
+
+    if (newDeadline && newCreatedDate) {
+        if (newDeadline < newCreatedDate) {
+            alert("A data de entrega não pode ser anterior à data de criação!");
+            return;
+        }
     }
 
     try {
@@ -295,7 +365,9 @@ async function confirmUpdateTask() {
             body: JSON.stringify({
                 description: newDescription,
                 priority: parseInt(newPriority),
-                status: parseInt(newStatus)
+                status: parseInt(newStatus),
+                createdDate: newCreatedDate || null,
+                deadline: newDeadline || null
             })
         });
 
