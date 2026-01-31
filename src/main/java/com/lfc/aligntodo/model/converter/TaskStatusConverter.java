@@ -1,9 +1,9 @@
 package com.lfc.aligntodo.model.converter;
 
 import com.lfc.aligntodo.model.enums.TaskStatusEnum;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
 
 @Converter(autoApply = true)
 public class TaskStatusConverter implements AttributeConverter<TaskStatusEnum, Integer> {

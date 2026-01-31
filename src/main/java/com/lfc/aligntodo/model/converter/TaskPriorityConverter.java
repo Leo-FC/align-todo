@@ -1,8 +1,9 @@
 package com.lfc.aligntodo.model.converter;
 
 import com.lfc.aligntodo.model.enums.TaskPriorityEnum;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+
 
 @Converter(autoApply = true)
 public class TaskPriorityConverter implements AttributeConverter<TaskPriorityEnum, Integer> {

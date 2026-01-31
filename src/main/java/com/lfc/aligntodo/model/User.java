@@ -2,22 +2,22 @@ package com.lfc.aligntodo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lfc.aligntodo.model.enums.ProfileEnum;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
-import javax.persistence.GenerationType;
-import javax.persistence.ElementCollection;
-import javax.persistence.FetchType;
-import javax.persistence.CollectionTable;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,6 +52,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ToString.Exclude
     private List<Task> tasks = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)

@@ -3,6 +3,7 @@ package com.lfc.aligntodo.controller;
 import com.lfc.aligntodo.model.Project;
 import com.lfc.aligntodo.model.projection.ProjectProjection;
 import com.lfc.aligntodo.service.ProjectService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
